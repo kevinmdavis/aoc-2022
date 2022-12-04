@@ -1,3 +1,5 @@
+package aoc2022.day03
+
 import java.io.File
 
 typealias ItemSet = Set<Char>

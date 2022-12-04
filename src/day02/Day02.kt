@@ -1,3 +1,5 @@
+package aoc2022.day02
+
 import java.io.File
 
 enum class Outcome {

@@ -1,3 +1,5 @@
+package aoc2022.day01
+
 import java.io.File
 
 fun parseCounts(lines: List<String>): List<List<Int>> {
