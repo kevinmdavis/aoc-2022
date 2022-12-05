@@ -1,6 +1,6 @@
 package aoc2022.day01
 
-import java.io.File
+import aoc2022.readInput
 
 fun parseCounts(lines: List<String>): List<List<Int>> {
     val result: MutableList<List<Int>> = mutableListOf()
@@ -26,7 +26,7 @@ fun part2(counts: List<List<Int>>): Int {
 }
 
 fun main() {
-    val counts = parseCounts(File("input/day01.txt").readLines())
+    val counts = parseCounts(readInput())
     val result1 = part1(counts)
     val result2 = part2(counts)
     println("Part 1: $result1")

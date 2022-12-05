@@ -1,6 +1,6 @@
 package aoc2022.day02
 
-import java.io.File
+import aoc2022.readInput
 
 enum class Outcome {
     Win, Lose, Draw;
@@ -96,7 +96,7 @@ fun part2(lines: List<String>): Int {
 }
 
 fun main() {
-    val lines = File("input/day02.txt").readLines()
+    val lines = readInput()
     val result1 = part1(lines)
     val result2 = part2(lines)
     println("Part 1: $result1")

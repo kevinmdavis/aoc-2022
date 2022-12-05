@@ -1,6 +1,6 @@
 package aoc2022.day03
 
-import java.io.File
+import aoc2022.readInput
 
 typealias ItemSet = Set<Char>
 
@@ -32,7 +32,7 @@ fun Char.priority(): Int {
 }
 
 fun main() {
-    val lines = File("input/day03.txt").readLines()
+    val lines = readInput()
     val result1 = lines.sumOf {
         it.compartments().overlap().priority()
     }
