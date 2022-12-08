@@ -42,7 +42,7 @@ data class Directory(val parent: Directory?, val name: String) : ListResult() {
 data class File(val parent: Directory, val name: String, val size: Int) : ListResult()
 
 
-fun part1(lines: List<String>): Int {
+fun computeSizes(lines: List<String>): Map<Directory, Int> {
     val totalSizes = mutableMapOf<Directory, Int>()
     var pwd = Directory.ROOT
     lines.forEach { line ->
@@ -69,11 +69,15 @@ fun part1(lines: List<String>): Int {
         totalSizes.merge(pwd.parent!!, totalSizes.getOrDefault(pwd, 0), Int::plus)
         pwd = pwd.parent!!
     }
-    return totalSizes.values.filter { it <= 100000 }.sum()
+    return totalSizes
 }
 
 fun main() {
     val lines = readInput()
-    val result1 = part1(lines)
+    val totalSizes = computeSizes(lines)
+    val result1 = totalSizes.values.filter { it <= 100000 }.sum()
+    val amountToDelete = 30000000 - (70000000 - totalSizes[Directory.ROOT]!!)
+    val result2 = totalSizes.values.sorted().first { it >= amountToDelete }
     println("Part 1: $result1")
+    println("Part 2: $result2")
 }
