@@ -2,17 +2,15 @@ package aoc2022.day10
 
 import aoc2022.readInput
 
-class CPU {
-    fun clockSignals(instructions: List<Instruction>): List<Pair<Int, Int>> {
-        return instructions.runningFold(0 to 1) { (cycle, x), inst ->
-            val newX = if (inst is Instruction.Add) {
-                x + inst.x
-            } else {
-                x
-            }
-            cycle + 1 to newX
-        }.dropLast(1)
-    }
+fun clockSignals(instructions: List<Instruction>): List<Pair<Int, Int>> {
+    return instructions.runningFold(0 to 1) { (cycle, x), inst ->
+        val newX = if (inst is Instruction.Add) {
+            x + inst.x
+        } else {
+            x
+        }
+        cycle + 1 to newX
+    }.dropLast(1)
 }
 
 sealed class Instruction {
@@ -34,9 +32,8 @@ sealed class Instruction {
 }
 
 fun main() {
-    val cpu = CPU()
     val instructions = Instruction.parseLines(readInput())
-    val signals = cpu.clockSignals(instructions)
+    val signals = clockSignals(instructions)
     val result1 = listOf(20, 60, 100, 140, 180, 220).map { signals[it] }.sumOf { it.first * it.second }
     val result2 = signals.map { (cycle, x) ->
         val h = cycle % 40
