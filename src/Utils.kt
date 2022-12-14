@@ -92,3 +92,26 @@ interface Graph<T> {
 
     fun bfs(start: T, end: T) = bfs(start) { it == end }
 }
+
+class TokenStream(private var s: String) {
+    fun peek(): Char {
+        return s.first()
+    }
+
+    fun consume(prefix: String, optional: Boolean = false) {
+        if (!s.startsWith(prefix) && !optional) {
+            throw IllegalArgumentException("String missing prefix '$prefix': $s")
+        }
+        s = s.removePrefix(prefix)
+    }
+
+    fun consumeWhile(f: (Char) -> Boolean): String {
+        var size = 0
+        while (size < s.length && f(s[size])) {
+            size++
+        }
+        val result = s.substring(0, size)
+        s = s.substring(size, s.length)
+        return result
+    }
+}
