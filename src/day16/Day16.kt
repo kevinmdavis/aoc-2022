@@ -36,7 +36,7 @@ fun Graph.shortestPaths(): Map<Pair<String, String>, Int> {
 
 fun subsetPermutations(nodes: Set<String>) = sequence {
     val values = nodes.toList()
-    for (i in 0 until (1 shl values.size)) {
+    for (i in 0 until (1 shl values.size - 1)) {
         val a = mutableListOf<String>()
         val b = mutableListOf<String>()
         for (j in values.indices) {
