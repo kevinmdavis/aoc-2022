@@ -2,6 +2,7 @@ package aoc2022.day17
 
 import aoc2022.Point
 import aoc2022.readInput
+import kotlin.IllegalStateException
 
 class Shape(val spaces: List<List<Boolean>>)
 
@@ -65,10 +66,11 @@ enum class Direction {
         }
 }
 
-class Chamber(val width: Int, val height: Int) {
-    val grid: List<MutableList<Boolean>> = List<MutableList<Boolean>>(height) { MutableList<Boolean>(width) { false } }
-    var highestRock: Int = 0
-    var rockCount = 0
+class Chamber(private val width: Int = 7, private val height: Int = 100000) {
+    private val grid: List<MutableList<Boolean>> = List(height) { MutableList(width) { false } }
+    private var highestRock: Int = 0
+    private var rockCount: Long = 0
+    private var dirOffset = 0
 
     operator fun get(p: Point): Boolean {
         return grid[p.y][p.x]
@@ -87,14 +89,14 @@ class Chamber(val width: Int, val height: Int) {
         return points.all { !this[it] }
     }
 
-    fun newRock(): Rock {
-        val shape = shapes[rockCount % shapes.size]
+    private fun newRock(): Rock {
+        val shape = shapes[(rockCount % shapes.size).toInt()]
         rockCount++
         val p = Point(2, highestRock + 3)
         return Rock(shape, p)
     }
 
-    fun move(rock: Rock, dir: Direction): Boolean {
+    private fun moveRock(rock: Rock, dir: Direction): Boolean {
         val canMove = checkCollision(rock, dir.delta)
         if (canMove) {
             rock.position += dir.delta
@@ -107,25 +109,57 @@ class Chamber(val width: Int, val height: Int) {
         return false
     }
 
-    fun add(rock: Rock) {
+    private fun addRock(rock: Rock) {
         highestRock = maxOf(highestRock, rock.position.y + rock.shape.spaces.size)
         rock.points().forEach {
             this[it] = true
         }
     }
 
-    fun process(directions: List<Direction>) {
-        var dirOffset = 0
-        repeat(2022) {
-            val rock = newRock()
-            var comeToRest = false
-            while (!comeToRest) {
-                val dir = directions[dirOffset]
-                dirOffset = (dirOffset + 1) % directions.size
-                comeToRest = move(rock, dir)
-            }
-            add(rock)
+    private fun dropRock(directions: List<Direction>) {
+        val rock = newRock()
+        var comeToRest = false
+        while (!comeToRest) {
+            val dir = directions[dirOffset]
+            dirOffset = (dirOffset + 1) % directions.size
+            comeToRest = moveRock(rock, dir)
         }
+        addRock(rock)
+    }
+
+    fun simulate(count: Long, directions: List<Direction>): Long {
+        val lookBack = 50
+        val previousStates = mutableMapOf<Int, Pair<Int, Int>>()
+        while (rockCount < count && highestRock < 2 * lookBack) {
+            dropRock(directions)
+        }
+        if (rockCount == count) {
+            return highestRock.toLong()
+        }
+        while (rockCount < count && !previousStates.contains(hashState(lookBack))) {
+            previousStates[hashState(lookBack)] = rockCount.toInt() to highestRock
+            dropRock(directions)
+        }
+        if (rockCount == count) {
+            return highestRock.toLong()
+        }
+        val (prevRockCount, prevHeight) = previousStates[hashState(lookBack)]!!
+        val cycle = (rockCount - prevRockCount)
+        val skippedCycles = (count - rockCount) / cycle
+        val correction = skippedCycles * (highestRock - prevHeight)
+        rockCount += skippedCycles * (rockCount - prevRockCount)
+        while (rockCount < count) {
+            dropRock(directions)
+        }
+        return highestRock + correction
+    }
+
+    private fun hashState(rows: Int): Int {
+        if (highestRock + 1 < rows) {
+            throw IllegalStateException()
+        }
+        val gridState = grid.slice((highestRock - rows)..highestRock)
+        return ((rockCount % shapes.size) to gridState).hashCode()
     }
 
     override fun toString(): String {
@@ -150,7 +184,8 @@ fun main() {
             else -> throw IllegalArgumentException()
         }
     }
-    val chamber = Chamber(7, 2022 * 5)
-    chamber.process(instructions)
-    println("Part 1: ${chamber.highestRock}")
+    val result1 = Chamber().simulate(2022, instructions)
+    val result2 = Chamber().simulate(1000000000000L, instructions)
+    println("Part 1: $result1")
+    println("Part 2: $result2")
 }
