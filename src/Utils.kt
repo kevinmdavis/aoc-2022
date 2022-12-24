@@ -94,8 +94,16 @@ interface Graph<T> {
 }
 
 class TokenStream(private var s: String) {
+    val remainingLength get() = s.length
+
     fun peek(): Char {
         return s.first()
+    }
+
+    fun consume(length: Int = 1): String {
+        val result = s.substring(0, length)
+        s = s.substring(length, s.length)
+        return result
     }
 
     fun consume(prefix: String, optional: Boolean = false) {
@@ -110,8 +118,6 @@ class TokenStream(private var s: String) {
         while (size < s.length && f(s[size])) {
             size++
         }
-        val result = s.substring(0, size)
-        s = s.substring(size, s.length)
-        return result
+        return consume(size)
     }
 }

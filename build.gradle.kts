@@ -8,6 +8,11 @@ repositories {
     mavenCentral()
 }
 
+dependencies {
+    implementation("org.jetbrains.kotlinx:multik-core:0.2.0")
+    implementation("org.jetbrains.kotlinx:multik-default:0.2.0")
+}
+
 tasks {
     sourceSets {
         main {
